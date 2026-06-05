@@ -13,12 +13,7 @@
 // ----------------------------------------------------------
 
 vd_icp_driver::vd_icp_driver() {}
-vd_icp_driver::~vd_icp_driver() {
-  if (configured) {
-    // Check if the mutex
-
-  }
-}
+vd_icp_driver::~vd_icp_driver() {}
 
 /**
  * @brief Initialize the device driver
@@ -159,6 +154,8 @@ bool vd_icp_driver::create_device() {
 
   shmPtr->id = id;
   init_mutex();
+  sem_init(&shmPtr->readRDY, 1, 1);
+  sem_init(&shmPtr->writeRDY, 1, 1);
 
   return true;
 }

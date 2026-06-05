@@ -9,14 +9,10 @@ int main(int argc, char *argv[]) {
   vd_icp_producer Test;
   Test.init();
 
-  sem_t* semptr = sem_open(SemaphoreName,
-    O_CREAT,      
-    AccessPerms, 
-    0); 
-
-  int count = 0;
-  while(1) {
-    sem_wait(semptr);
+  sem_t tmp;
+  sem_init(&tmp, 1, 1);
+  while (1) {
+    sem_wait(&tmp);
   }
 
   return 0;
