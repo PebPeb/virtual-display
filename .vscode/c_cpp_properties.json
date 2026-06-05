@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": [
+        "${workspaceFolder}/inc/**",
+        "${workspaceFolder}/src/**",
+        "${workspaceFolder}/tests/**",
+        "/usr/include/x86_64-linux-gnu/qt6",
+        "/usr/include/x86_64-linux-gnu/qt6/QtCore",
+        "/usr/include/x86_64-linux-gnu/qt6/QtGui",
+        "/usr/include/x86_64-linux-gnu/qt6/QtWidgets",
+        "/usr/include/x86_64-linux-gnu/qt6/QtXml"
+      ],
+      "defines": [
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "compilerPath": "/usr/bin/g++",
+      "cStandard": "gnu17",
+      "cppStandard": "gnu++17",
+      "intelliSenseMode": "linux-gcc-x64"
+    }
+  ],
+  "version": 4
+}
