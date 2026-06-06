@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <iostream>
 #include <semaphore.h>
 #include <fcntl.h>
@@ -6,8 +7,11 @@
 #include "vd_icp_driver.h"
 
 int main(int argc, char *argv[]) {
-  vd_icp_producer Test;
-  Test.init();
+  vd_icp_producer myProducer(10, 10, RGB);
+  vd_icp_consumer myConsumer;
+
+  myProducer.init();
+  myConsumer.init();
 
   sem_t tmp;
   sem_init(&tmp, 1, 1);

@@ -19,14 +19,15 @@ vd_icp_driver::~vd_icp_driver() {}
  * @brief Initialize the device driver
  * 
  */
-void vd_icp_driver::init() {
+bool vd_icp_driver::init() {
   if(discover_device()) {     // Try and find a valid device
     printf("Connected To Device\n");
   } else {                    // Create a new device
     printf("Creating New Device\n");\
-    create_device();
+    if (!create_device())
+      return false;
   }
-  configured = true;
+  return true;
 }
 
 /**
@@ -151,18 +152,43 @@ bool vd_icp_driver::create_device() {
     fd, 
     0
   );
+  close(fd);
 
   shmPtr->id = id;
   init_mutex();
   sem_init(&shmPtr->readRDY, 1, 1);
+  sem_wait(&shmPtr->readRDY);           // The read semaphore needs to be locked on init
+
   sem_init(&shmPtr->writeRDY, 1, 1);
 
   return true;
 }
 
+
+bool vd_icp_driver::write(int cmd) {
+  switch (cmd) {
+    case LOCK:      return sem_trywait(&shmPtr->writeRDY);
+    case RELEASE:   return sem_post(&shmPtr->writeRDY);
+    default:        return false;
+  }
+}
+
+bool vd_icp_driver::read(int cmd) {
+  switch (cmd) {
+    case LOCK:      return sem_trywait(&shmPtr->readRDY);
+    case RELEASE:   return sem_post(&shmPtr->readRDY);
+    default:        return false;
+  }
+}
+
+
 // ----------------------------------------------------------
 
-vd_icp_producer::vd_icp_producer() {}
+vd_icp_producer::vd_icp_producer(uint16_t pixelW, uint16_t pixelH, uint8_t vdCF = RGB) {
+  pWidth = pixelW;
+  pHeight = pixelH;
+  vdColorFormat = vdCF;
+}
 vd_icp_producer::~vd_icp_producer() {}
 
 /**
@@ -197,6 +223,46 @@ bool vd_icp_producer::init_mutex() {
   pthread_mutex_init(&shmPtr->consumer, &attr);
   return try_connecting(shmPtr);
 }
+
+bool vd_icp_producer::init() {
+  if(!vd_icp_driver::init())
+    return false;
+  
+  shmPtr->colorFormat = vdColorFormat;
+  shmPtr->pixelW = pWidth;
+  shmPtr->pixelH = pHeight;
+
+  sharedMemoryFile = std::string(SharedMemory) + "-" + std::to_string(shmPtr->id);
+  int fd = shm_open(sharedMemoryFile.c_str(), O_CREAT | O_RDWR, AccessPerms);
+  if (fd == -1) {
+    std::perror("shm_open failed");
+    return false;
+  }
+
+  munmap(shmPtr, sizeof(vd_header));
+  int dataSize = sizeof(vd_header) + (sizeof(uint32_t) * pWidth * pHeight);
+
+  if (ftruncate(fd, dataSize) == -1) {
+    std::perror("ftruncate failed");
+    close(fd);
+    return false;
+  } 
+
+  shmPtr = (vd_header*) mmap(
+    NULL, 
+    dataSize, 
+    PROT_READ | PROT_WRITE, 
+    MAP_SHARED, 
+    fd, 
+    0
+  );
+
+  imageData = (uint32_t *)(shmPtr + sizeof(vd_header));
+  close(fd);
+
+  return true;
+}
+
 
 // ----------------------------------------------------------
 
@@ -234,5 +300,3 @@ bool vd_icp_consumer::init_mutex() {
   pthread_mutex_init(&shmPtr->consumer, &attr);
   return try_connecting(shmPtr);
 }
-
-
