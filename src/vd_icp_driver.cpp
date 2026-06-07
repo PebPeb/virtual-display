@@ -68,6 +68,7 @@ bool vd_icp_driver::discover_device(){
       // Try to connect
       if (try_connecting(currVdDriver)) {
         shmPtr = currVdDriver;
+        imageData = (uint32_t *)((uint64_t)shmPtr + sizeof(vd_header));
         return true;
       }
     }
@@ -182,6 +183,23 @@ bool vd_icp_driver::read(int cmd) {
   }
 }
 
+/**
+ * @brief Initiates mutex for a new device and tries to connect to it
+ * 
+ * @return true 
+ * @return false 
+ */
+bool vd_icp_driver::init_mutex() {
+  // Setting up mutex attributes to work with shared memory
+  pthread_mutexattr_t attr;
+  pthread_mutexattr_init(&attr);
+  pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+  pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
+
+  pthread_mutex_init(&shmPtr->producer, &attr);
+  pthread_mutex_init(&shmPtr->consumer, &attr);
+  return try_connecting(shmPtr);
+}
 
 // ----------------------------------------------------------
 
@@ -205,24 +223,6 @@ bool vd_icp_producer::try_connecting(vd_header* vdObj) {
   }
   if (!r) { return true; }
   return false;
-}
-
-/**
- * @brief Initiates mutex for a new device and tries to connect to it
- * 
- * @return true 
- * @return false 
- */
-bool vd_icp_producer::init_mutex() {
-  // Setting up mutex attributes to work with shared memory
-  pthread_mutexattr_t attr;
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-  pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
-
-  pthread_mutex_init(&shmPtr->producer, &attr);
-  pthread_mutex_init(&shmPtr->consumer, &attr);
-  return try_connecting(shmPtr);
 }
 
 bool vd_icp_producer::init() {
@@ -282,24 +282,6 @@ bool vd_icp_consumer::try_connecting(vd_header* vdObj) {
   }
   if (!r) { return true; }
   return false;
-}
-
-/**
- * @brief Initiates mutex for a new device and tries to connect to it
- * 
- * @return true 
- * @return false 
- */
-bool vd_icp_consumer::init_mutex() {
-  // Setting up mutex attributes to work with shared memory
-  pthread_mutexattr_t attr;
-  pthread_mutexattr_init(&attr);
-  pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
-  pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
-  
-  pthread_mutex_init(&shmPtr->producer, &attr);
-  pthread_mutex_init(&shmPtr->consumer, &attr);
-  return try_connecting(shmPtr);
 }
 
 bool vd_icp_consumer::init() {

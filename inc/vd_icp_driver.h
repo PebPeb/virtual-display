@@ -6,13 +6,13 @@
 class vd_icp_driver {
   protected:
     std::string sharedMemoryFile;
-    vd_header *shmPtr;
     
     bool discover_device();
     bool create_device();
     virtual bool try_connecting(vd_header* vdObj) {return false;};
-    virtual bool init_mutex() {return false;};
-  public:
+    bool init_mutex();
+    public:
+    vd_header *shmPtr;
     uint32_t *imageData;
 
     vd_icp_driver();
@@ -30,7 +30,6 @@ class vd_icp_producer : public vd_icp_driver {
     uint8_t vdColorFormat;
 
     bool try_connecting(vd_header* vdObj) override;
-    bool init_mutex() override;
   public:
     vd_icp_producer(uint16_t pixelW, uint16_t pixelH, uint8_t vdCF);
     ~vd_icp_producer();
@@ -45,7 +44,6 @@ class vd_icp_consumer : public vd_icp_driver {
     uint8_t  curvdColorFormat;
 
     bool try_connecting(vd_header* vdObj) override;
-    bool init_mutex() override;
     bool checkIfChangesToDriver();
     bool updateShmPtr();
   public:

@@ -13,27 +13,26 @@ int main(int argc, char *argv[]) {
   myConsumer.init();
   myProducer.init();
 
-  if(myProducer.write(LOCK)) {
-    std::cout << "Locking Write" << std::endl;
-    for (int i = 0; i < 10; i++) {
-      for (int j = 0; j < 10; j++) {
-        myProducer.imageData[i*10+j] = i*10+j;
+  for (int k = 0; k < 10; k++) {
+    if(myProducer.write(LOCK)) {
+      for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+          myProducer.imageData[i*10+j] = i*10+j;
+        }
       }
     }
-  }
-  myProducer.write(RELEASE);
+    myProducer.write(RELEASE);
 
-  if(myConsumer.read(LOCK)) {
-    std::cout << "Locking Read" << std::endl;
-    for (int i = 0; i < 10; i++) {
-      for (int j = 0; j < 10; j++) {
-        std::cout << std::to_string(myConsumer.imageData[i*10+j]) << " ";
+    if(myConsumer.read(LOCK)) {
+      for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 10; j++) {
+          std::cout << std::to_string(myConsumer.imageData[i*10+j]) << " ";
+        }
+        std::cout << std::endl;
       }
-      std::cout << std::endl;
     }
+    myConsumer.read(RELEASE);
   }
-  myConsumer.read(RELEASE);
-
 
 
 
