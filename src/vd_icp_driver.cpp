@@ -10,8 +10,15 @@
 
 #include "vd_icp_driver.h"
 
+
+// ----------------------------------------------------------
+// vd_icp_driver
 // ----------------------------------------------------------
 
+/**
+ * @brief Construct a new vd icp driver::vd icp driver object
+ * 
+ */
 vd_icp_driver::vd_icp_driver() {}
 vd_icp_driver::~vd_icp_driver() {}
 
@@ -166,7 +173,6 @@ bool vd_icp_driver::create_device() {
   return true;
 }
 
-
 bool vd_icp_driver::write(int cmd) {
   switch (cmd) {
     case LOCK:      return !sem_trywait(&shmPtr->writeRDY);
@@ -201,6 +207,8 @@ bool vd_icp_driver::init_mutex() {
   return try_connecting(shmPtr);
 }
 
+// ----------------------------------------------------------
+// vd_icp_producer
 // ----------------------------------------------------------
 
 vd_icp_producer::vd_icp_producer(uint16_t pixelW, uint16_t pixelH, uint8_t vdCF = RGB) {
@@ -263,7 +271,8 @@ bool vd_icp_producer::init() {
   return true;
 }
 
-
+// ----------------------------------------------------------
+// vd_icp_consumer
 // ----------------------------------------------------------
 
 vd_icp_consumer::vd_icp_consumer() {}

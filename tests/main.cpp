@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "hvd.h"
+#include "vd_gui.h"
 
 int main(int argc, char *argv[]) {
-  hvd app;
+  vd_gui app;
   return 0;
 }

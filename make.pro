@@ -6,11 +6,12 @@ TEMPLATE = app
 INCLUDEPATH += inc 
 
 SOURCES += tests/main.cpp \
-           src/hvd.cpp
+           src/vd_gui.cpp \
+           src/vd_icp_driver.cpp
 
-HEADERS += inc/hvd_icp.h \
-           inc/hvd.h \
-           inc/shmem.h
+HEADERS += inc/vd_gui.h \
+           inc/vd_icp_driver.h
+           
 
 # Output Directories
 UI_DIR = build/ui         # ui_*.h files

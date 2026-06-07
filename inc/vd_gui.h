@@ -2,14 +2,21 @@
 #include <QWidget>
 #include <QThread>
 
-class hvd
+class vd_gui : public QObject
 {
+  Q_OBJECT
+  
   private:
     QApplication* app;   // Application
     QWidget* window;     // Application Window
     
     std::thread* applicationThread; 
+  
+  signals:
+    void dataReceived(QString data);
+    void finished();
+
   public:
-    hvd();
-    ~hvd();
+    vd_gui();
+    ~vd_gui();
 };

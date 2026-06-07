@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     if(myProducer.write(LOCK)) {
       for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
-          myProducer.imageData[i*10+j] = i*10+j;
+          myProducer.imageData[i*10+j] = i*10+j+k*100;
         }
       }
     }
@@ -31,15 +31,8 @@ int main(int argc, char *argv[]) {
         std::cout << std::endl;
       }
     }
+    std::cout << std::endl;
     myConsumer.read(RELEASE);
-  }
-
-
-
-  sem_t tmp;
-  sem_init(&tmp, 1, 1);
-  while (1) {
-    sem_wait(&tmp);
   }
 
   return 0;
