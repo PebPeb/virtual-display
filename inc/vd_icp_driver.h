@@ -14,12 +14,12 @@ class vd_icp_driver {
     virtual bool init_mutex() {return false;};
   public:
     uint32_t *imageData;
-    
+
     vd_icp_driver();
     ~vd_icp_driver();
 
-    bool write(int cmd);
-    bool read(int cmd);
+    virtual bool write(int cmd);
+    virtual bool read(int cmd);
     virtual bool init();
 };
 
@@ -40,9 +40,19 @@ class vd_icp_producer : public vd_icp_driver {
 
 class vd_icp_consumer : public vd_icp_driver {
   private:
+    uint16_t curpWidth;
+    uint16_t curpHeight; 
+    uint8_t  curvdColorFormat;
+
     bool try_connecting(vd_header* vdObj) override;
     bool init_mutex() override;
+    bool checkIfChangesToDriver();
+    bool updateShmPtr();
   public:
     vd_icp_consumer();
     ~vd_icp_consumer();
+
+    bool init() override;
+    bool write(int cmd) override;
+    bool read(int cmd) override;
 };
