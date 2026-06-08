@@ -1,8 +1,11 @@
 #include <QApplication>
 #include <QWidget>
 #include <QThread>
+#include <QVBoxLayout>
 
 #include "vd_gui.h"
+#include "vd_widgets.h"
+#include "vd_icp_driver.h"
 
 vd_gui::vd_gui() {
   int argc = 1;
@@ -11,12 +14,30 @@ vd_gui::vd_gui() {
 
   app = new QApplication(argc, argv);
   window = new QWidget();
+  rootLayout = new QVBoxLayout();
+
   window->resize(400, 300);
   window->setWindowTitle("Hello Qt");
   
+  vd_icp_consumer myConsumer;
+  myConsumer.init();
+  myConsumer.read(LOCK);
+  screenWidget myScreen(&myConsumer);
+  
+  rootLayout->addWidget(&myScreen);
+  window->setLayout(rootLayout);
+  window->show();
+  app->exec();
+  myConsumer.read(RELEASE);
+  return;
+}
 
-  QImage image(640, 480, QImage::Format_RGB32);
-  image.setPixelColor(100, 50, Qt::red);
+vd_gui::~vd_gui()
+{
+  return;
+}
+
+
 
   // QThread* thread = new QThread();
   // hvd_icp* worker = new hvd_icp();
@@ -41,13 +62,3 @@ vd_gui::vd_gui() {
       
       // thread->start();
       
-  window->show();
-  app->exec();
-  return;
-}
-
-vd_gui::~vd_gui()
-{
-  return;
-}
-

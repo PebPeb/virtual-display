@@ -7,9 +7,12 @@ INCLUDEPATH += inc
 
 SOURCES += tests/main.cpp \
            src/vd_gui.cpp \
+           src/vd_widgets.cpp \
            src/vd_icp_driver.cpp
 
 HEADERS += inc/vd_gui.h \
+           inc/vd_widgets.h \
+           inc/vd_parameters.h \
            inc/vd_icp_driver.h
            
 

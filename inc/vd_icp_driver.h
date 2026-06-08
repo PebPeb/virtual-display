@@ -1,3 +1,6 @@
+#ifndef VD_ICP_DRIVER_H
+#define VD_ICP_DRIVER_H
+
 #include <string>
 #include <pthread.h>
 
@@ -54,3 +57,5 @@ class vd_icp_consumer : public vd_icp_driver {
     bool write(int cmd) override;
     bool read(int cmd) override;
 };
+
+#endif // VD_ICP_DRIVER_H

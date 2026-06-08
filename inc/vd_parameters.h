@@ -1,3 +1,7 @@
+#ifndef VD_PARAMETERS_H
+#define VD_PARAMETERS_H
+
+
 #include <stdint.h>  
 #include <pthread.h>
 #include <semaphore.h>
@@ -25,4 +29,4 @@ struct vd_header {
   uint16_t pixelH = 0;
 };
 
-
+#endif // VD_PARAMETERS_H
